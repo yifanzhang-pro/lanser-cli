@@ -1,5 +1,9 @@
 # Lanser-CLI
 
+[![Website](https://img.shields.io/badge/Project-Website-blue)](https://yifanzhang-pro.github.io/lanser-cli) 
+![Python 3.10+](https://img.shields.io/badge/python-3.12-green.svg)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)](https://opensource.org/license/apache-2-0)
+
 ### Language Server CLI Empowers Language Agents with Process Rewards
 
 `Lanser-CLI` is a CLI-first orchestration layer that lets coding agents and developers access
