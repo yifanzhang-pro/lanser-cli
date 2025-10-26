@@ -395,7 +395,7 @@ lanser schema bundle   --out bundle.schema.json</code></pre>
 
           <h4 class="title is-5" style="margin-top:1.2rem;">Bundle Envelope (with process reward)</h4>
 <pre><code>{
-  "version": "1.3",
+  "version": "1.2",
   "bundleId": "sha256:…",
   "status": "ok",
   "request": {"cmd":"definition","selector": {...}},
@@ -404,13 +404,13 @@ lanser schema bundle   --out bundle.schema.json</code></pre>
   "facts": {"definitions":[...], "hover": {...}, "provenance":"lsp"},
   "edits": {"workspaceEdit": null, "diff": null},
   "processReward": {
-    "version":"pr-v1","r":0.73,
-    "components":{"diag_delta":1,"safety":1,"ambiguity_penalty":0.27},
+    "version":"pr-v1","r":0.872,
+    "components":{"diag_delta":1,"safety":1,"ambiguity_penalty":0.28},
     "weights":{"alpha":0.5,"beta":0.4,"gamma":0.1},
     "explanation":"Reward computed from deterministic bundle contents."
   },
   "environment": {"server":{"name":"pyright","version":"1.1.406"},
-                  "positionEncoding":"utf-16","python":{"version":"3.11.6"}},
+                  "positionEncoding":"utf-16","python":{"version":"3.12.0"}},
   "capabilities": {"partialResult": false, "cancellable": true},
   "meta": {"exit_code":0,
            "sorting_keys":["uri","range[0]","range[1]","range[2]","range[3]"]}
