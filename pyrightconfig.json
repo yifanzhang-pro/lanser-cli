@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/pyright/main/packages/pyright-internal/src/schemas/pyrightconfig.schema.json",
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.12",
+  "pythonPlatform": "Linux",
+  "include": ["src"],
+  "exclude": ["tests"],
+  "stubPath": "typings",
+  "extraPaths": ["src"],
+  "reportUnknownParameterType": "warning",
+  "reportUnknownVariableType": "warning",
+  "reportUnknownMemberType": "warning",
+  "reportUnknownLambdaType": "warning",
+  "reportMissingTypeStubs": "warning",
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "warning",
+  "strictListInference": true,
+  "strictDictionaryInference": true,
+  "strictSetInference": true,
+  "reportUnnecessaryTypeIgnoreComment": "error",
+  "executionEnvironments": [
+    {"root": "src", "extraPaths": ["src"]}
+  ]
+}
