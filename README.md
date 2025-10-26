@@ -38,9 +38,10 @@ language server capabilities with deterministic, replayable workflows.
 
 ## Tooling
 
-- Pyright `1.1.406` is the pinned language server version for development and
-  CI. The version is centralised in `lanser.pyright_version` and surfaced via the
-  `lanser doctor` command.
+- Pyright `1.1.407` is the primary language server version for development and
+  CI, with compatibility retained for `1.1.406`. Supported versions are
+  centralised in `lanser.pyright_version` and surfaced via the `lanser doctor`
+  command.
 
 ## Citation
 
