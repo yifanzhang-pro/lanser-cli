@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lanser-CLI — Language Server CLI Empowers Language Agents with Process Rewards</title>
+
+  <meta name="description" content="Lanser-CLI is a CLI-first orchestration layer that pins and mediates Language Server Protocol (LSP) servers for coding agents and CI, exposing deterministic, replayable workflows and a process reward derived from IDE‑grade facts.">
+  <meta name="keywords" content="Lanser-CLI, Language Server Protocol, LSP, Agents, Process Reward, Determinism, Replay, Static Analysis, Pyright, IDE, JSON-RPC, Selector DSL">
+  <meta name="citation_title" content="Language Server CLI Empowers Language Agents with Process Rewards">
+  <meta name="citation_author" content="Yifan Zhang et al.">
+  <meta name="citation_publication_date" content="2025/10/24">
+  <meta name="citation_pdf_url" content="lanserpaper.pdf">
+  <meta property="og:title" content="Lanser-CLI — Language Server CLI Empowers Language Agents with Process Rewards"/>
+  <meta property="og:description" content="A CLI-first, agent-native layer that transforms language-server facts into deterministic, replayable artifacts and process rewards for planning and CI."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://yifanzhang-pro.github.io/lanser-cli/"/>
+  <link rel="canonical" href="https://yifanzhang-pro.github.io/lanser-cli/">
+  <link rel="icon" href="https://placehold.co/32x32/0A2540/FFFFFF?text=LS" type="image/x-icon">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        macros: { bm: ["\\mathbf{#1}", 1] }
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <style>
+    :root{
+      --primary-color:#0A2540;    /* Deep IDE Navy */
+      --accent-color:#00C2FF;     /* Cyan accent */
+      --main-bg:#FFFFFF;
+      --content-bg:#F6F8FA;
+      --text-main:#2D2D2D;
+      --text-on-primary:#FFFFFF;
+      --link-color:var(--primary-color);
+      --link-hover-color:#143E73;
+      --primary-color-rgb:10,37,64; /* set at runtime too */
+      --link-color-rgb:10,37,64;
+      --border-color:#e5e7eb;
+      --shadow-color:rgba(0,0,0,0.1);
+    }
+
+    html{scroll-behavior:smooth}
+    body{
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text-main); background:var(--main-bg);
+      display:flex; flex-direction:column; min-height:100vh;
+      text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Navbar */
+    .navbar{
+      background:rgba(var(--primary-color-rgb),0.92);
+      backdrop-filter:blur(10px);
+      box-shadow:0 2px 5px var(--shadow-color);
+      position:sticky; top:0; z-index:100;
+    }
+    .navbar .navbar-item, .navbar .navbar-link{ color:var(--text-on-primary); font-weight:500; }
+    .navbar a.navbar-item:hover, .navbar .navbar-link:hover, .navbar-item.is-active{ color:var(--accent-color)!important; background:transparent!important; }
+    .navbar-burger{ color:var(--text-on-primary); }
+
+    /* Hero */
+    .hero{ background:linear-gradient(180deg, #0A2540 0%, #0e3055 100%); color:var(--text-on-primary); }
+    .hero .title{
+      font-family:'Space Grotesk', sans-serif; font-weight:700; color:var(--text-on-primary);
+      font-size:3.0rem; line-height:1.1;
+    }
+    .hero .subtitle.is-hero-subtitle{
+      color:rgba(255,255,255,0.92); font-size:1.22rem; max-width:900px; margin:1.25rem auto 2rem auto;
+    }
+    .hero .subtitle .highlight{ color:var(--accent-color); font-weight:600; }
+
+    .project-links a{ color:var(--text-on-primary); font-size:1.45rem; margin:0 0.6rem; transition:transform .25s ease, color .25s ease; }
+    .project-links a:hover{ color:var(--accent-color); transform:translateY(-2px); }
+
+    /* Sections */
+    .section.content-section{ padding:4.5rem 1.25rem; border-bottom:1px solid var(--border-color); }
+    .section.content-section:nth-child(even){ background:var(--content-bg); }
+    .section-title{
+      font-family:'Space Grotesk', sans-serif; font-weight:700; color:var(--primary-color);
+      margin-bottom:2.2rem;
+    }
+    .content{ max-width:1000px; margin:0 auto; line-height:1.8; font-size:1.06rem; }
+    .content a{ color:var(--link-color); font-weight:500; text-decoration:none; border-bottom:2px solid rgba(var(--link-color-rgb),.2); }
+    .content a:hover{ color:var(--link-hover-color); border-bottom-color:var(--link-hover-color); }
+    .content img{ display:block; margin:1.75rem auto; max-width:100%; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+
+    /* Code & Pre */
+    .content pre{
+      background:#0f172a; color:#cbd5e1; border-radius:8px; padding:1.1em 1.2em;
+      overflow:auto; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    code{ background:#f2f4f7; color:#1f2937; padding:0.18em 0.38em; border-radius:4px; font-size:85%; }
+    pre code{ background:transparent; color:inherit; padding:0; font-size:inherit; }
+
+    /* Badges / pills */
+    .pill{ display:inline-block; padding:.35rem .6rem; border-radius:999px; font-size:.82rem; background:#E6F7FF; color:#0A2540; margin:.15rem .25rem; border:1px solid #C8ECFF; }
+
+    /* Footer */
+    .footer{
+      background:var(--primary-color); color:var(--text-on-primary);
+      padding:2rem 1.5rem; border-top:3px solid var(--accent-color); margin-top:auto;
+    }
+    .footer a{ color:var(--accent-color); font-weight:500; }
+    .footer a:hover{ color:#ffffff; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item is-size-5 has-text-weight-bold" href="#">Lanser-CLI</a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="navbarMenu" class="navbar-menu">
+        <div class="navbar-end">
+          <a href="#abstract" class="navbar-item">Abstract</a>
+          <a href="#motivation" class="navbar-item">Motivation</a>
+          <a href="#architecture" class="navbar-item">Architecture</a>
+          <a href="#selectors" class="navbar-item">Selectors</a>
+          <a href="#rewards" class="navbar-item">Process Reward</a>
+          <a href="#safety" class="navbar-item">Safety</a>
+          <a href="#cli-bundles" class="navbar-item">CLI & Bundles</a>
+          <a href="#citation" class="navbar-item">Citation</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero is-medium">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <h1 class="title">Language Server CLI Empowers<br>Language Agents with Process Rewards</h1>
+        <h2 class="subtitle is-hero-subtitle">
+          A <span class="highlight">CLI‑first, agent‑native</span> orchestrator that pins an LSP server, normalizes its facts into
+          <span class="highlight">deterministic, replayable bundles</span>, and exposes a <span class="highlight">process reward</span> for planner‑act loops.
+        </h2>
+        <h3 class="subtitle is-5" style="color:rgba(255,255,255,0.9); margin-top:1rem;">
+          Yifan Zhang <span style="opacity:.85;">et&nbsp;al.</span>
+        </h3>
+        <h4 class="subtitle is-6" style="color:rgba(255,255,255,0.8); margin-top:-0.35rem;">Princeton University &nbsp;•&nbsp; October 24, 2025</h4>
+        <div class="project-links" style="margin-top:1rem;">
+          <a href="lanserpaper.pdf" target="_blank" rel="noopener" aria-label="Paper PDF"><i class="fas fa-file-pdf"></i></a>
+          <a href="https://github.com/yifanzhang-pro/lanser-cli" target="_blank" rel="noopener" aria-label="GitHub Repository"><i class="fab fa-github"></i></a>
+          <a href="#citation" aria-label="Citation"><i class="fas fa-quote-right"></i></a>
+        </div>
+        <div style="margin-top:1.25rem;">
+          <span class="pill">LSP (Pyright)</span>
+          <span class="pill">Deterministic Bundles</span>
+          <span class="pill">Selector DSL</span>
+          <span class="pill">Process Reward</span>
+          <span class="pill">Replay & CI</span>
+          <span class="pill">Safe Mutations</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ABSTRACT -->
+    <section id="abstract" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Abstract</h2>
+        <div class="content has-text-justified" style="max-width:860px;">
+          <p>
+            Large language models hallucinate APIs and mislocalize edits; language servers compute verified, IDE‑grade facts.
+            <strong>Lanser‑CLI</strong> is a CLI‑first orchestration layer that pins and mediates a Language Server Protocol (LSP) server
+            for coding agents and CI, exposing deterministic, replayable workflows. Beyond structural information (definitions, references,
+            types, diagnostics), the same facts yield an actionable <em>process reward</em>: machine‑checked, step‑wise signals that align an agent’s
+            planning loop with program reality.
+          </p>
+          <p>
+            Contributions include: (i) a robust addressing scheme via a <strong>Selector DSL</strong> (symbolic, AST‑path, content‑anchored) with a principled relocation algorithm;
+            (ii) deterministic <strong>Analysis Bundles</strong> that normalize server responses and capture environment/capability metadata under stable content hashes;
+            (iii) a safety envelope for mutating operations (preview, workspace jail, Git‑aware transactional apply); and
+            (iv) a <strong>process‑reward functional</strong> from LSP facts (diagnostic deltas, disambiguation confidence, safe‑apply checks) that is computable online and replayable offline.
+          </p>
+          <p class="has-text-centered" style="margin-top:1.25rem;">
+            <a class="button is-link is-light" href="https://github.com/yifanzhang-pro/lanser-cli" target="_blank" rel="noopener">
+              <span class="icon"><i class="fab fa-github"></i></span><span>Project Repository</span>
+            </a>
+            <a class="button is-primary" style="background:var(--primary-color);" href="lanserpaper.pdf" target="_blank" rel="noopener">
+              <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Read the Paper</span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOTIVATION -->
+    <section id="motivation" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Motivation: Bridging the Agent–Server Gap</h2>
+        <div class="content">
+          <p>
+            Raw LSP usage leaves four gaps for autonomous agents:
+          </p>
+          <ol>
+            <li><strong>Determinism & Replay:</strong> stable ordering, content hashing, and version pinning (no “works on my machine”).</li>
+            <li><strong>Robust Addressing:</strong> selectors that survive edits and resist positional drift; explicit indexing semantics.</li>
+            <li><strong>Safety for Mutations:</strong> preview‑first, workspace jail, and transactional apply.</li>
+            <li><strong>Process Supervision:</strong> intermediate, verifiable feedback correlated with task success.</li>
+          </ol>
+          <p>
+            Lanser‑CLI transforms interactive language‑server sessions into verifiable, replayable artifacts for protocol grounding:
+            prefer machine‑checked facts over model speculation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section id="architecture" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Architecture Overview</h2>
+        <div class="content">
+          <p class="has-text-centered">
+            <img src="https://placehold.co/960x420/edf2f7/0a2540?text=Lanser-CLI+Orchestrator+%7C+Agent%E2%86%94LSP%E2%86%94Workspace" alt="Lanser‑CLI orchestrator mediates agent ↔ LSP server ↔ workspace; emits deterministic bundles.">
+            <span class="is-size-7"><strong>Figure:</strong> The orchestrator mediates JSON‑RPC with a pinned LSP (e.g., Pyright) and emits bundles.</span>
+          </p>
+          <h4 class="title is-5" style="margin-top:1.8rem;">Environment Capture</h4>
+          <p>
+            Each bundle records: <code>{serverVersion, positionEncoding, pythonExe, pythonVersion, venvPath, configDigest, platform}</code>.
+          </p>
+          <h4 class="title is-5" style="margin-top:1.2rem;">Contracts & Invariants</h4>
+          <ul>
+            <li>Deterministic list order: <code>(uri, sL, sC, eL, eC)</code> with stable tie‑breakers.</li>
+            <li><code>bundleId</code> is a SHA‑256 over a JCS‑canonicalized subset (timestamps excluded).</li>
+            <li>Replay under frozen snapshot: identical inputs &rarr; identical bundles.</li>
+          </ul>
+          <pre><code>{
+  "version": "1.3",
+  "bundleId": "sha256:…",
+  "request": {"cmd": "definition", "selector": {...}},
+  "facts": {"definitions": [...], "hover": {...}},
+  "environment": {"server":{"name":"pyright","version":"1.1.406"},
+    "positionEncoding":"utf-16","python":{"version":"3.11.6"}},
+  "meta": {"sorting_keys": ["uri","range[0]","range[1]","range[2]","range[3]"]}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SELECTORS -->
+    <section id="selectors" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Selectors & Repositioning</h2>
+        <div class="content">
+          <p>
+            Agents address intent rather than bytes. The <strong>PositionSpec</strong> union supports cursor, range, symbolic, AST‑path, and content‑anchor forms with an optional <code>docVersion</code>.
+          </p>
+<pre><code>// Structured PositionSpec (subset)
+{ kind:"cursor", uri, line, col, indexing:"utf-16|utf-8|codepoint" }
+{ kind:"range", uri, start:[l,c], end:[l,c] }
+{ kind:"symbol", qualname:"pkg.mod:Class.method", role:"def|sig|body|doc", overload:0 }
+{ kind:"ast", path:[["module","pkg.mod"],["class","C"],["def","m"]] }
+{ kind:"anchor", uri, snippet:"def load_data(", ctx:24, hash:"sha1:…"} </code></pre>
+          <p><strong>Canonical strings</strong> for the CLI:</p>
+<pre><code># Cursor / range
+src/app.py@L42:C7
+src/app.py@R(42,7->44,1)
+
+# Symbolic
+py://pkg.mod#Class.method:body
+py://pkg.mod#function_name:sig
+
+# AST path (subset)
+ast://[module=pkg.mod]/[class=Class]/[def=method]/name[1]
+
+# Content anchor (snippet + context N chars)
+anchor://src/app.py#"def load_data("?ctx=24</code></pre>
+          <h4 class="title is-5" style="margin-top:1.2rem;">Indexing Semantics</h4>
+          <p>
+            Lanser‑CLI negotiates <code>positionEncoding</code> with the server (default LSP <code>utf‑16</code>) and allows CLI I/O in
+            <code>utf‑8</code> or <code>codepoint</code>. When they differ, both are surfaced in verbose traces; bundles retain server coordinates.
+          </p>
+          <h4 class="title is-5" style="margin-top:1.2rem;">Relocate Algorithm (deterministic)</h4>
+<pre><code>Algorithm: Relocate(selector s, workspace W, optional snapshot v)
+1. If v present and W has exact map(s, v): return [(map(s, v), 1.0)].
+2. If s.kind ∈ {symbol, ast}: resolve via module graph + parser → candidates A.
+3. If s.kind = anchor: fuzzy match k-grams within context → candidates H.
+4. Score candidates by: 0.5·ast + 0.2·module + 0.2·tokenJaccard + 0.1·proximity.
+5. Sort desc by (score, uri, range). If empty → E/NOT_FOUND.
+6. If ties or low top-score: attach disambiguation evidence. Return top-k.</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS REWARD -->
+    <section id="rewards" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Process Rewards from Structural Signals</h2>
+        <div class="content">
+          <p>
+            We expose a shaped reward computable online and replayable from bundles. Let $D_t$ be relevant diagnostics at step $t$,
+            $S_t\in\{0,1\}$ indicate that safety checks pass, and $\alpha_t\in[0,1]$ be the top disambiguation confidence.
+          </p>
+          <p class="has-text-centered">
+            $$ r_t = \alpha\,(D_{t-1}-D_t) + \beta\,S_t - \gamma\,(1-\alpha_t), \quad \alpha,\beta,\gamma \ge 0. $$
+          </p>
+          <p>
+            Example weights $(\alpha,\beta,\gamma)=(0.5,0.4,0.1)$.
+          </p>
+          <div class="columns is-multiline">
+            <div class="column is-half">
+<pre><code>// Example 1: diag↓, safe, confident
+D_{t-1}=5, D_t=2, S_t=1, α_t=0.94
+r_t = 0.5*(3) + 0.4*(1) - 0.1*(0.06) ≈ 1.894</code></pre>
+            </div>
+            <div class="column is-half">
+<pre><code>// Example 2: no improvement, unsafe, ambiguous
+D_{t-1}=7, D_t=7, S_t=0, α_t=0.62
+r_t = 0 + 0 - 0.1*(0.38) = -0.038</code></pre>
+            </div>
+          </div>
+          <p>
+            Under a frozen snapshot and fixed toolchain, reward monotonicity holds when ambiguity does not increase and safety is not violated; replay retrieves the same $r_t$ from bundles.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAFETY -->
+    <section id="safety" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Editing & Safety Envelope</h2>
+        <div class="content">
+          <ul>
+            <li><strong>Preview‑by‑default:</strong> dry‑run produces diffs; apply requires <code>--apply</code>.</li>
+            <li><strong>Workspace jail:</strong> edits confined to project root with allow/deny path filters.</li>
+            <li><strong>Git guardrails:</strong> clean worktree required (override with <code>--allow-dirty</code>).</li>
+            <li><strong>Atomic apply:</strong> temp files + <code>fsync</code> + <code>rename(2)</code>; optional <code>git apply --3way</code>.</li>
+            <li><strong>Indexing & encoding checks:</strong> dual coordinates surfaced in verbose mode.</li>
+          </ul>
+<pre><code>Algorithm: PreviewThenApply (Guarded Rename)
+1. Assert clean git or --allow-dirty.
+2. prepareRename(s) → must pass; else error.
+3. rename(s, newName) → WorkspaceEdit preview; emit unified diff.
+4. If --apply: apply atomically (jail + filters). On conflict → E/APPLY_CONFLICT.
+5. Notify server (didChange); emit success bundle.</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLI & BUNDLES -->
+    <section id="cli-bundles" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Interface: CLI, Tracing, and Bundles</h2>
+        <div class="content">
+          <h4 class="title is-5">Navigation (read‑only)</h4>
+<pre><code># Definition / References / Hover / Symbols / Diagnostics
+lanser def py://pkg.mod#Class.method:sig --json
+lanser refs anchor://src/app.py#"def load_data("?ctx=24 --json
+lanser hover src/app.py@L42:C7 --json
+lanser symbols --json
+lanser diag --json</code></pre>
+
+          <h4 class="title is-5" style="margin-top:1.2rem;">Safe Mutations</h4>
+<pre><code>lanser prepare-rename py://pkg.mod#load_data:def --json
+lanser rename py://pkg.mod#load_data:def read_data --dry-run
+lanser rename py://pkg.mod#load_data:def read_data --apply</code></pre>
+
+          <h4 class="title is-5" style="margin-top:1.2rem;">Batch & Replay</h4>
+<pre><code># JSONL batch execution
+lanser batch --in requests.jsonl --out bundles.jsonl --trace-file trace.jsonl
+
+# Deterministic replay of a recorded trace
+lanser trace replay --trace-file trace.jsonl --verify</code></pre>
+
+          <h4 class="title is-5" style="margin-top:1.2rem;">Schema Contracts</h4>
+<pre><code># Export JSON Schemas for Selector DSL and bundle envelopes
+lanser schema selector --out selector.schema.json
+lanser schema bundle   --out bundle.schema.json</code></pre>
+
+          <h4 class="title is-5" style="margin-top:1.2rem;">Bundle Envelope (with process reward)</h4>
+<pre><code>{
+  "version": "1.3",
+  "bundleId": "sha256:…",
+  "status": "ok",
+  "request": {"cmd":"definition","selector": {...}},
+  "resolution": {"original":"py://pkg.mod#load_data:def",
+                 "resolved": {...}, "disambiguation":[...]},
+  "facts": {"definitions":[...], "hover": {...}, "provenance":"lsp"},
+  "edits": {"workspaceEdit": null, "diff": null},
+  "processReward": {
+    "version":"pr-v1","r":0.73,
+    "components":{"diag_delta":1,"safety":1,"ambiguity_penalty":0.27},
+    "weights":{"alpha":0.5,"beta":0.4,"gamma":0.1},
+    "explanation":"Reward computed from deterministic bundle contents."
+  },
+  "environment": {"server":{"name":"pyright","version":"1.1.406"},
+                  "positionEncoding":"utf-16","python":{"version":"3.11.6"}},
+  "capabilities": {"partialResult": false, "cancellable": true},
+  "meta": {"exit_code":0,
+           "sorting_keys":["uri","range[0]","range[1]","range[2]","range[3]"]}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- CITATION -->
+    <section id="citation" class="section content-section">
+      <div class="container">
+        <h2 class="title is-3 has-text-centered section-title">Citation</h2>
+        <div class="content">
+          <p>If you find this work useful, please cite:</p>
+<pre><code>@article{zhang2025lanser,
+  title   = {Language Server CLI Empowers Language Agents with Process Rewards},
+  author  = {Yifan Zhang and others},
+  year    = {2025},
+  month   = {oct},
+  note    = {Preprint},
+  howpublished = {\url{https://github.com/yifanzhang-pro/lanser-cli}}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <p>
+          <a href="#abstract">Abstract</a> &nbsp;&bull;&nbsp;
+          <a href="#motivation">Motivation</a> &nbsp;&bull;&nbsp;
+          <a href="#architecture">Architecture</a> &nbsp;&bull;&nbsp;
+          <a href="#selectors">Selectors</a> &nbsp;&bull;&nbsp;
+          <a href="#rewards">Process Reward</a> &nbsp;&bull;&nbsp;
+          <a href="#safety">Safety</a> &nbsp;&bull;&nbsp;
+          <a href="#cli-bundles">CLI &amp; Bundles</a> &nbsp;&bull;&nbsp;
+          <a href="#citation">Citation</a>
+        </p>
+        <p>&copy; 2025 Yifan Zhang et&nbsp;al. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile navbar toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      const $burgers = Array.from(document.querySelectorAll('.navbar-burger'));
+      $burgers.forEach(el => {
+        el.addEventListener('click', () => {
+          const target = el.dataset.target;
+          const $target = document.getElementById(target);
+          el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+        });
+      });
+
+      // Hex → rgb helper and CSS var initialization for early paint consistency
+      function hexToRgb(hex){
+        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return m ? { r:parseInt(m[1],16), g:parseInt(m[2],16), b:parseInt(m[3],16) } : null;
+      }
+      const root = document.documentElement;
+      const styles = getComputedStyle(root);
+      const p = styles.getPropertyValue('--primary-color').trim();
+      const l = styles.getPropertyValue('--link-color').trim();
+      const prgb = hexToRgb(p), lrgb = hexToRgb(l);
+      if(prgb){ root.style.setProperty('--primary-color-rgb', `${prgb.r}, ${prgb.g}, ${prgb.b}`); }
+      if(lrgb){ root.style.setProperty('--link-color-rgb', `${lrgb.r}, ${lrgb.g}, ${lrgb.b}`); }
+    });
+  </script>
+
+</body>
+</html>
