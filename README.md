@@ -41,3 +41,14 @@ language server capabilities with deterministic, replayable workflows.
 - Pyright `1.1.406` is the pinned language server version for development and
   CI. The version is centralised in `lanser.pyright_version` and surfaced via the
   `lanser doctor` command.
+
+## Citation
+
+```bibtex
+@article{zhang2025language,
+   title   = {Language Server CLI Empowers Language Agents with Process Rewards},
+   author  = {Zhang, Yifan and Contributors, Lanser},
+   journal = {arXiv preprint arXiv:TBD},
+   year    = {2025}
+}
+```
