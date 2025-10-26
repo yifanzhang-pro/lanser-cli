@@ -3,8 +3,7 @@
 ### Language Server CLI Empowers Language Agents with Process Rewards
 
 `Lanser-CLI` is a CLI-first orchestration layer that lets coding agents and developers access
-language server capabilities with deterministic, replayable workflows. See 
-[`PROJECT.md`](PROJECT.md) for details. TODOs are listed in [`CHECKLIST.md`](CHECKLIST.md). 
+language server capabilities with deterministic, replayable workflows. 
 
 ## CLI Overview
 
