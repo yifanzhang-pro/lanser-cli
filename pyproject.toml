@@ -1,0 +1,101 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lanser"
+version = "1.0.3"
+description = "LSP orchestration layer and CLI for coding agents"
+readme = "README.md"
+authors = [{name = "LSP for Coding Agents Team"}]
+license = {text = "Apache-2.0"}
+requires-python = ">=3.12"
+dependencies = [
+  "click==8.1.7",
+  "packaging>=24.1",
+  "pydantic==2.12.3",
+  "typer==0.11.1",
+]
+
+[project.scripts]
+lanser = "lanser.cli:main"
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit",
+  "pyright>=1.1.406,<1.1.408",
+  "pytest",
+  "ruff",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lanser"]
+include = [
+  "src/lanser/py.typed",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/lanser/py.typed",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "UP",
+  "ANN",
+  "TCH",
+]
+ignore = [
+  "E203",
+  "ANN101",
+  "ANN102",
+]
+
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN", "TCH", "I"]
+"typings/**" = ["ANN401"]
+"src/lanser/analysis.py" = ["TCH003"]
+"src/lanser/pyright.py" = ["TCH003"]
+"src/lanser/python_symbols.py" = ["TCH003"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.pyright]
+pythonVersion = "3.12"
+pythonPlatform = "Linux"
+include = ["src"]
+exclude = ["tests"]
+venvPath = "."
+venv = ".venv"
+executionEnvironments = [
+  {root = "src", extraPaths = ["src"]},
+]
+stubPath = "typings"
+strict = []
+reportUnknownParameterType = "warning"
+reportUnknownVariableType = "warning"
+reportUnknownMemberType = "warning"
+reportUnknownLambdaType = "warning"
+reportMissingTypeStubs = "warning"
+reportMissingImports = "warning"
+reportMissingModuleSource = "warning"
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+reportUnnecessaryTypeIgnoreComment = "error"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src"]
