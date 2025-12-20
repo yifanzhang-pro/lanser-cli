@@ -4,3 +4,4 @@ __pycache__/
 .eggs/
 *.egg-info/
 .lanser/
+.DS_Store
