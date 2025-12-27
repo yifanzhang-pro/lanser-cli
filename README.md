@@ -50,7 +50,7 @@ language server capabilities with deterministic, replayable workflows.
 @article{zhang2025language,
    title   = {Language Server CLI Empowers Language Agents with Process Rewards},
    author  = {Zhang, Yifan and Contributors, Lanser},
-   journal = {arXiv preprint arXiv:TBD},
+   journal = {arXiv preprint arXiv:2510.22907},
    year    = {2025}
 }
 ```
